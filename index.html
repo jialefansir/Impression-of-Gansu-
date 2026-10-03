@@ -1,0 +1,1349 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>City Collection &middot; GANSU</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@300;400;500&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            insDark: "#0c0c0e",
+            insMuted: "#9494a0",
+            insAccent: "#b4a484",
+            insCard: "#1a1a1e",
+            insBorder: "rgba(255,255,255,0.08)",
+          },
+          fontFamily: {
+            inter: ["Inter", "system-ui", "sans-serif"],
+            display: ["Playfair Display", "serif"],
+          },
+        },
+      },
+    };
+  </script>
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .scrollbar-none::-webkit-scrollbar { display: none; }
+      .scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
+      .glass {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+      }
+      .glass-deep {
+        background: rgba(12, 12, 14, 0.85);
+        backdrop-filter: blur(24px);
+        -webkit-backdrop-filter: blur(24px);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+      }
+      .img-filter {
+        filter: saturate(0.85) contrast(0.95) brightness(0.9);
+      }
+      .smooth-transition {
+        transition: all 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+      }
+      .text-shadow {
+        text-shadow: 0 2px 20px rgba(0,0,0,0.5);
+      }
+      .gradient-overlay {
+        background: linear-gradient(to top, rgba(12,12,14,0.8) 0%, rgba(12,12,14,0.2) 40%, transparent 100%);
+      }
+      .spot-card:hover .spot-img {
+        transform: scale(1.05);
+      }
+      .spot-card:hover .spot-overlay {
+        opacity: 1;
+      }
+      .spot-overlay {
+        opacity: 0;
+        transition: opacity 0.4s ease;
+      }
+      .carousel-dot.active {
+        background: #b4a484;
+        width: 32px;
+      }
+      .fade-in {
+        animation: fadeIn 0.8s ease forwards;
+      }
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      .slide-up {
+        animation: slideUp 0.6s ease forwards;
+      }
+      @keyframes slideUp {
+        from { opacity: 0; transform: translateY(40px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+    }
+    body {
+      background-color: #0c0c0e;
+      font-family: Inter, system-ui, sans-serif;
+      overflow-x: hidden;
+    }
+  </style>
+</head>
+<body class="bg-insDark text-white scrollbar-none">
+
+  <!-- 顶部固定导航 -->
+  <header class="fixed top-0 left-0 w-full z-50 px-6 py-4 flex items-center justify-between glass smooth-transition" id="mainHeader">
+    <div class="flex items-center gap-3">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Flag_of_the_People%27s_Republic_of_China.svg" alt="" class="h-5 w-8 rounded-sm object-cover opacity-70" />
+      <span class="tracking-[0.3em] text-[10px] uppercase text-insMuted font-light">City Collection &middot; GANSU</span>
+    </div>
+    <div class="flex items-center gap-4">
+      <span class="text-[10px] tracking-[0.2em] text-insMuted font-light hidden md:block">Ins Minimal Gallery</span>
+      <div class="flex gap-2">
+        <button class="lang-switch-top px-2 py-0.5 rounded text-[10px] smooth-transition active" data-lang="en" style="color:#b4a484; border:1px solid rgba(180,164,132,0.3);">EN</button>
+        <button class="lang-switch-top px-2 py-0.5 rounded text-[10px] smooth-transition text-insMuted" data-lang="cn" style="border:1px solid rgba(255,255,255,0.1);">中文</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- 全屏轮播区域 -->
+  <section class="h-screen w-full relative overflow-hidden" id="heroSection">
+    <div id="carouselWrap" class="w-full h-full relative"></div>
+    <div class="absolute inset-0 gradient-overlay pointer-events-none"></div>
+    <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-2 z-10" id="carouselDots"></div>
+    <div class="absolute bottom-8 right-8 flex gap-3 z-10">
+      <button id="prevBtn" class="w-11 h-11 rounded-full glass flex items-center justify-center hover:bg-white/10 smooth-transition group">
+        <i class="fa fa-angle-left text-insMuted group-hover:text-white smooth-transition"></i>
+      </button>
+      <button id="nextBtn" class="w-11 h-11 rounded-full glass flex items-center justify-center hover:bg-white/10 smooth-transition group">
+        <span class="text-[10px] tracking-[0.15em] text-insMuted group-hover:text-white smooth-transition">NEXT</span>
+      </button>
+    </div>
+    <div class="absolute bottom-20 left-8 md:left-12 z-10 max-w-xl">
+      <p class="text-[10px] tracking-[0.3em] text-insAccent uppercase mb-2 fade-in" id="heroSubtitle">Discover Gansu</p>
+      <h2 class="text-4xl md:text-6xl font-display font-light tracking-widest uppercase text-shadow mb-3 fade-in" id="heroTitle">LANZHOU</h2>
+      <p class="text-insMuted text-sm tracking-[0.15em] fade-in" id="heroDesc">Yellow River Capital</p>
+    </div>
+    <div class="absolute bottom-8 left-8 md:left-12 flex flex-col items-center gap-2 z-10 animate-bounce">
+      <div class="w-px h-8 bg-gradient-to-b from-transparent via-insAccent to-transparent"></div>
+    </div>
+  </section>
+
+  <!-- 城市详情弹窗 -->
+  <div id="cityModal" class="fixed inset-0 z-[99] opacity-0 pointer-events-none smooth-transition overflow-y-auto scrollbar-none">
+    <div id="modalBg" class="absolute inset-0 bg-cover bg-center img-filter opacity-30 smooth-transition"></div>
+    <div class="absolute inset-0 bg-gradient-to-b from-insDark/60 via-insDark/80 to-insDark/95"></div>
+    <div class="relative min-h-screen py-20 px-4 md:px-8">
+      <div class="max-w-5xl mx-auto">
+        <div class="flex justify-between items-center mb-8 sticky top-4 z-10">
+          <button id="closeModal" class="glass px-4 py-2 rounded-full text-insMuted hover:text-white smooth-transition text-xs tracking-widest flex items-center gap-2">
+            <i class="fa fa-arrow-left"></i> <span class="lang-en">BACK</span><span class="lang-cn">返回</span>
+          </button>
+          <div class="flex gap-2">
+            <button class="lang-switch px-3 py-1.5 rounded-full glass text-xs smooth-transition active" data-lang="en" style="color:#b4a484; border:1px solid rgba(180,164,132,0.3);">EN</button>
+            <button class="lang-switch px-3 py-1.5 rounded-full glass text-xs smooth-transition text-insMuted" data-lang="cn" style="border:1px solid rgba(255,255,255,0.1);">中文</button>
+          </div>
+        </div>
+        <div id="modalContent"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 景点详情页面 -->
+  <div id="spotDetailModal" class="fixed inset-0 z-[100] opacity-0 pointer-events-none smooth-transition overflow-y-auto scrollbar-none">
+    <div id="spotDetailBg" class="absolute inset-0 bg-cover bg-center img-filter opacity-20 smooth-transition"></div>
+    <div class="absolute inset-0 bg-gradient-to-b from-insDark/70 via-insDark/90 to-insDark"></div>
+    <div class="relative min-h-screen">
+      <div class="sticky top-0 z-10 px-6 py-4 flex justify-between items-center glass">
+        <button id="closeSpotDetail" class="text-insMuted hover:text-white smooth-transition text-xs tracking-widest flex items-center gap-2">
+          <i class="fa fa-arrow-left"></i> <span class="lang-en">BACK TO CITY</span><span class="lang-cn">返回城市</span>
+        </button>
+        <div class="flex gap-2">
+          <button class="lang-switch-spot px-3 py-1.5 rounded-full glass text-xs smooth-transition active" data-lang="en" style="color:#b4a484; border:1px solid rgba(180,164,132,0.3);">EN</button>
+          <button class="lang-switch-spot px-3 py-1.5 rounded-full glass text-xs smooth-transition text-insMuted" data-lang="cn" style="border:1px solid rgba(255,255,255,0.1);">中文</button>
+        </div>
+      </div>
+      <div id="spotDetailContent" class="px-4 md:px-8 pb-20 max-w-5xl mx-auto"></div>
+    </div>
+  </div>
+
+  <!-- 景点图片预览弹窗 -->
+  <div id="spotImgModal" class="fixed inset-0 z-[101] bg-black/95 opacity-0 pointer-events-none smooth-transition flex items-center justify-center p-4 md:p-8">
+    <button id="closeSpotImg" class="absolute top-6 right-6 text-white/60 hover:text-white smooth-transition w-10 h-10 rounded-full glass flex items-center justify-center">
+      <i class="fa fa-times"></i>
+    </button>
+    <div class="max-w-5xl w-full">
+      <img id="spotImgPreview" src="" alt="" class="w-full h-auto rounded-lg img-filter max-h-[80vh] object-contain">
+      <p id="spotImgName" class="text-center mt-4 text-insMuted tracking-widest text-sm"></p>
+    </div>
+  </div>
+
+  <script>
+
+    // ==================== 城市双语数据源（甘肃14个地级行政区） ====================
+    const cityData = {
+      lanzhou: {
+        name: "LANZHOU",
+        nameCn: "兰州",
+        subtitle: "Yellow River Capital",
+        subtitleCn: "黄河之都",
+        bg: "https://pics1.baidu.com/feed/4bed2e738bd4b31cad14d17471c5a56f9f2ff8fd@f_auto?token=18d5d98dd0228c62e30351f48fb08e33&f=jpeg",
+        intro: {
+          en: "The only provincial capital city through which the Yellow River flows, Lanzhou is the core transportation and industrial hub of northwest China. With a history spanning over 2,000 years, it serves as a vital node on the ancient Silk Road, blending modern petrochemical industry with rich cultural heritage.",
+          cn: "黄河唯一穿城而过的省会城市，西北核心交通枢纽与工业重镇。拥有两千多年历史，是古丝绸之路上的重要节点，现代石化工业与深厚文化底蕴交相辉映。"
+        },
+        economy: {
+          en: "Northwest logistics center, petroleum chemical industry, modern retail, new energy manufacturing, and pharmaceutical industry form the main economic pillars. GDP ranks first in Gansu province.",
+          cn: "西北物流中心，石油化工、现代零售、新能源制造、生物医药构成主要经济支柱。GDP位居甘肃省首位。"
+        },
+        food: {
+          en: ["Lanzhou Beef Noodles", "Gray Bean Snack", "Sweet Fermented Rice", "Yellow River Braised Fish", "Niangpi (Cold Noodles)", "Stuffed Hui Bun"],
+          cn: ["兰州牛肉面", "灰豆子", "甜醅子", "黄河大鲤鱼", "酿皮子", "油炒粉"]
+        },
+        spots: [
+          { 
+            key: "zhongshan_bridge",
+            name: "Zhongshan Bridge", 
+            nameCn: "中山桥", 
+            img: "https://kimi-web-img.moonshot.cn/img/img.redocn.com/1b5552ae476e3f50557ea250d014b8bd5adec016.jpg",
+            desc: { en: "Known as the First Bridge over the Yellow River, built in 1907. This historic iron bridge is a symbol of Lanzhou and offers stunning views of the Yellow River.", cn: "被誉为黄河第一桥，建于1907年。这座历史悠久的铁桥是兰州的象征，可俯瞰黄河壮丽景色。" },
+            detail: {
+              en: "Zhongshan Bridge, also known as the First Bridge over the Yellow River, was constructed in 1907 during the late Qing Dynasty. It is the first permanent bridge across the Yellow River and has become an iconic landmark of Lanzhou. The bridge spans 233.5 meters and features German engineering. At night, the illuminated bridge reflects beautifully on the river surface, creating a mesmerizing scene. The surrounding area includes Baita Mountain Park and the Yellow River Mother Sculpture.",
+              cn: "中山桥，又称黄河第一桥，建于1907年清末时期。它是黄河上第一座永久性桥梁，已成为兰州的标志性建筑。桥长233.5米，采用德国工程技术。夜晚灯光璀璨，倒映在河面上，形成迷人景象。周边包括白塔山公园和黄河母亲雕塑。"
+            }
+          },
+          { 
+            key: "yellow_river_mother",
+            name: "Yellow River Mother Statue", 
+            nameCn: "黄河母亲雕像", 
+            img: "https://kimi-web-img.moonshot.cn/img/picn.huitu.com/ed1f369cd9384bccaeea62138cea3db222f3a0fe.jpg",
+            desc: { en: "A famous sculpture symbolizing the Yellow River as the mother of Chinese civilization, located on the south bank of the river.", cn: "象征黄河为中华文明之母的著名雕塑，位于黄河南岸。" },
+            detail: {
+              en: "The Yellow River Mother Sculpture, created by renowned sculptor He E, depicts a mother figure lying peacefully with a child nestled beside her. Made of granite, the sculpture symbolizes the nurturing role of the Yellow River in Chinese civilization. It has become one of the most photographed landmarks in Lanzhou.",
+              cn: "黄河母亲雕塑由著名雕塑家何鄂创作，描绘了一位母亲安详地躺着，身旁依偎着一个孩子。由花岗岩制成，象征黄河在中华文明中的哺育作用。它已成为兰州最受欢迎的摄影地标之一。"
+            }
+          },
+          { 
+            key: "baita_mountain",
+            name: "Baita Mountain Park", 
+            nameCn: "白塔山公园", 
+            img: "https://kimi-web-img.moonshot.cn/img/img.redocn.com/30ba6afbc1093d4133202ad43498b77b3cd63cf9.jpg",
+            desc: { en: "A historic park on the north bank of the Yellow River, featuring the iconic White Pagoda and panoramic city views.", cn: "黄河北岸的历史公园，以标志性白塔和全景城市景观闻名。" },
+            detail: {
+              en: "Baita Mountain Park is located on the north bank of the Yellow River, offering panoramic views of Lanzhou city. The park is named after the historic White Pagoda (Baita) built during the Yuan Dynasty. Visitors can climb to the top for breathtaking views of the city skyline and the winding Yellow River.",
+              cn: "白塔山公园位于黄河北岸，可俯瞰兰州全城。公园因元代建造的白塔而得名。游客可登顶欣赏城市天际线和蜿蜒黄河的壮丽景色。"
+            }
+          }
+        ]
+      },
+      qingyang: {
+        name: "QINGYANG",
+        nameCn: "庆阳",
+        subtitle: "Loess Plateau & Computing Hub",
+        subtitleCn: "黄土高原与算力枢纽",
+        bg: "https://img1.baidu.com/it/u=2217640585,2260858818&fm=253&fmt=auto&app=138&f=JPEG?w=1487&h=800",
+        intro: {
+          en: "Birthplace of ancient Chinese farming civilization and a core node of the national East-Data West-Computing project. Qingyang boasts the world's largest intact loess plateau landform and rich revolutionary history.",
+          cn: "华夏农耕文明发源地，国家东数西算核心节点。拥有全球保存最完整的黄土塬地貌，以及丰富的革命历史底蕴。"
+        },
+        economy: {
+          en: "Green computing industry, petroleum energy, apple cultivation, and characteristic livestock breeding are the four core pillars. The city is transforming into a national data center hub.",
+          cn: "算力产业、石油能源、苹果种植、特色畜牧四大核心支柱。正在转型为国家数据中心枢纽。"
+        },
+        food: {
+          en: ["Lamb Hot Pot", "Buckwheat Noodles", "Zaosheng Beef", "Qingyang Oil Tea", "Rice Wine", "Stuffed Pastry"],
+          cn: ["羊肉暖锅", "荞麦饸饹", "早胜牛肉", "庆阳油茶", "米酒", "炉齿馍"]
+        },
+        spots: [
+          { 
+            key: "dongzhi_plateau",
+            name: "Dongzhi Plateau", 
+            nameCn: "董志塬", 
+            img: "https://kimi-web-img.moonshot.cn/img/q4.itc.cn/0e79d85608fe50db4c3097ac2ab84d60c38591c1.jpeg",
+            desc: { en: "The world's largest intact loess plateau, known as the First Plateau of the World, showcasing spectacular loess landforms.", cn: "全球保存最完整的黄土塬，被誉为天下第一塬，展示壮观的黄土地貌。" },
+            detail: {
+              en: "Dongzhi Plateau is recognized as the world's largest intact loess plateau, earning the title First Plateau of the World. Spanning over 900 square kilometers, it showcases the most spectacular loess landforms on Earth.",
+              cn: "董志塬被公认为全球保存最完整的黄土塬，享有天下第一塬的美誉。面积超过900平方公里，展示了地球上最壮观的黄土地貌。"
+            }
+          },
+          { 
+            key: "zhouzu_mausoleum",
+            name: "Zhouzu Mausoleum", 
+            nameCn: "周祖陵", 
+            img: "https://kimi-web-img.moonshot.cn/img/picn.huitu.com/0c84812ba51127d390cb6b36e7908905824ea464.jpg",
+            desc: { en: "The mausoleum of the ancestors of the Zhou Dynasty, representing the roots of Chinese civilization.", cn: "周朝先祖陵墓，代表着中华文明的根脉。" },
+            detail: {
+              en: "Zhouzu Mausoleum is dedicated to the ancestors of the Zhou Dynasty. The site features ancient temples, stone carvings, and beautiful mountain scenery. It is considered one of the most important cultural heritage sites in northwest China.",
+              cn: "周祖陵供奉周朝先祖。遗址包括古庙、石雕和美丽的山景。它被认为是西北地区最重要的文化遗产之一。"
+            }
+          },
+          { 
+            key: "ziwuling_forest",
+            name: "Ziwuling Forest", 
+            nameCn: "子午岭", 
+            img: "https://kimi-web-img.moonshot.cn/img/d.ifengimg.com/b6a192da5c6da33727b0066d55cc1bda3009e465.jpeg",
+            desc: { en: "A vast forest area with rich biodiversity and historical significance as a revolutionary base.", cn: "广袤的森林区域，生物多样性丰富，作为革命根据地具有重要历史意义。" },
+            detail: {
+              en: "Ziwuling Forest is one of the largest forest areas in the Loess Plateau region, covering vast stretches of pristine woodland. The area served as an important revolutionary base during the Chinese revolution.",
+              cn: "子午岭是黄土高原地区最大的森林区域之一，覆盖大片原始林地。在中国革命时期曾作为重要的革命根据地。"
+            }
+          },
+          { 
+            key: "nanliang_base",
+            name: "Nanliang Revolutionary Base", 
+            nameCn: "南梁革命根据地", 
+            img: "https://kimi-web-img.moonshot.cn/img/www.gscn.com.cn/84dfca29414a242a837524c33d2799f699e48e8c.jpg",
+            desc: { en: "An important revolutionary base during the Chinese revolution, preserving rich red culture heritage.", cn: "中国革命时期的重要根据地，保存着丰富的红色文化遗产。" },
+            detail: {
+              en: "Nanliang Revolutionary Base was a crucial stronghold during the Chinese revolution in the 1930s. Today, the site includes memorial halls, preserved revolutionary sites, and museums that showcase the heroic deeds of revolutionaries.",
+              cn: "南梁革命根据地是1930年代中国革命时期的重要据点。如今，遗址包括纪念馆、保存的革命旧址和博物馆，展示革命者的英雄事迹。"
+            }
+          }
+        ]
+      },
+      zhangye: {
+        name: "ZHANGYE",
+        nameCn: "张掖",
+        subtitle: "Colorful Danxia Landform",
+        subtitleCn: "七彩丹霞地貌",
+        bg: "https://miaobi-lite.bj.bcebos.com/miaobi/5mao/b%27LV8xNzM1Njc4NzE1Ljg3NzUxMQ%3D%3D%27/0.png?authorization=bce-auth-v1%2FALTAKmda7zOvhZVbRzBLewvCMU%2F2024-12-31T20%3A58%3A37Z%2F-1%2F%2Ff35cb761177b3219deb05d2f4152a6cf9f629b2e76e6b549c46ac5c9f8a2a13b",
+        intro: {
+          en: "Known as the Jiangnan of the Hexi Corridor, Zhangye is world-famous for its colorful Danxia landform. It combines ecological tourism with seed agriculture, creating a unique blend of natural beauty and agricultural innovation.",
+          cn: "素有河西走廊江南之称，以七彩丹霞地貌闻名世界。融合生态旅游与制种农业，创造出自然美景与农业创新的独特结合。"
+        },
+        economy: {
+          en: "High-value seed breeding industry, characteristic animal husbandry, and scenic tourism drive urban development. The Danxia landform attracts millions of tourists annually.",
+          cn: "高端制种产业、特色畜牧、风景文旅带动城市发展。丹霞地貌每年吸引数百万游客。"
+        },
+        food: {
+          en: ["Braised Mutton", "Crispy Rice Soup", "Highland Barley Wine", "Stir-fried Mushroom", "Zhangye Noodles", "Roujiamo"],
+          cn: ["焖羊肉", "炮仗子汤", "青稞酒", "山菌小炒", "张掖搓鱼子", "肉夹馍"]
+        },
+        spots: [
+          { 
+            key: "colorful_danxia",
+            name: "Colorful Danxia", 
+            nameCn: "七彩丹霞", 
+            img: "https://kimi-web-img.moonshot.cn/img/www.ourchinastory.com/5a450b3984e0b9a2ccde9e1de9b272d7a994173c.jpg",
+            desc: { en: "A UNESCO World Heritage site featuring stunning rainbow-colored mountain formations, one of China's most spectacular natural wonders.", cn: "联合国教科文组织世界遗产，以令人惊叹的彩虹色山体形态为特色，是中国最壮观的自然奇观之一。" },
+            detail: {
+              en: "Zhangye Danxia National Geological Park is a UNESCO World Heritage site renowned for its spectacular rainbow-colored mountain formations. Spanning over 50 square kilometers, the park features layers of red, yellow, orange, green, white, and blue sandstone.",
+              cn: "张掖丹霞国家地质公园是联合国教科文组织世界遗产，以其壮观的彩虹色山体形态而闻名。公园面积超过50平方公里，呈现出红、黄、橙、绿、白、蓝等色彩层次分明的砂岩。"
+            }
+          },
+          { 
+            key: "mati_temple",
+            name: "Mati Temple", 
+            nameCn: "马蹄寺", 
+            img: "https://kimi-web-img.moonshot.cn/img/www.zgzyw.com.cn/ad3185d88da5c8f1992c29e99b386878854cf6b9.jpg",
+            desc: { en: "Ancient Buddhist cave temples carved into the cliffside, featuring stunning religious art and architecture.", cn: "悬崖峭壁上雕刻的古老佛教石窟寺庙，以精美的宗教艺术和建筑闻名。" },
+            detail: {
+              en: "Mati Temple is a complex of Buddhist cave temples carved into the cliffside of the Qilian Mountains. Dating back over 1,600 years, the temple features intricate Buddhist sculptures, murals, and architectural marvels.",
+              cn: "马蹄寺是雕刻在祁连山悬崖峭壁上的佛教石窟寺庙群。始建于1600多年前，寺庙内有精美的佛教雕塑、壁画和建筑奇观。"
+            }
+          },
+          { 
+            key: "great_buddha_temple",
+            name: "Great Buddha Temple", 
+            nameCn: "大佛寺", 
+            img: "https://kimi-web-img.moonshot.cn/img/pic.gansudaily.com.cn/75c443e76996e303c000f80f2bbe7018d03e4899.jpg",
+            desc: { en: "Home to the largest indoor reclining Buddha in China, built during the Western Xia Dynasty.", cn: "拥有中国最大的室内卧佛，建于西夏时期。" },
+            detail: {
+              en: "Zhangye Great Buddha Temple, built in 1098 during the Western Xia Dynasty, houses the largest indoor reclining Buddha in China. The Buddha statue is 34.5 meters long and made of clay, wood, and gold leaf.",
+              cn: "张掖大佛寺建于1098年西夏时期，拥有中国最大的室内卧佛。佛像长34.5米，由泥土、木材和金箔制成。"
+            }
+          }
+        ]
+      },
+      jiuquan: {
+        name: "JIUQUAN",
+        nameCn: "酒泉",
+        subtitle: "Space City & Silk Road Gateway",
+        subtitleCn: "航天之城与丝路门户",
+        bg: "https://kimi-web-img.moonshot.cn/img/assets.699pic.com/3108c71f7327ae5179db615f5dd2dd51df41898e.v1",
+        intro: {
+          en: "Home to China's Jiuquan Satellite Launch Center, the birthplace of China's space industry. As the western gateway of the Hexi Corridor, it connects ancient Silk Road heritage with modern aerospace technology.",
+          cn: "中国酒泉卫星发射中心所在地，中国航天事业的发源地。作为河西走廊的西大门，连接古丝绸之路遗产与现代航天科技。"
+        },
+        economy: {
+          en: "Aerospace industry, new energy (wind and solar power), mineral resources, and cultural tourism are the core economic pillars. The city is China's most important space launch base.",
+          cn: "航天产业、新能源（风电和光伏）、矿产资源、文化旅游为核心经济支柱。是中国最重要的航天发射基地。"
+        },
+        food: {
+          en: ["Jiuquan Stuffed Skin", "Camel Hoof", "Mutton Kebabs", "Apricot Skin Water", "Hand-pulled Noodles", "Oil Tea"],
+          cn: ["酒泉酿皮", "驼掌", "烤羊肉串", "杏皮水", "拉条子", "油茶"]
+        },
+        spots: [
+          { 
+            key: "satellite_launch",
+            name: "Jiuquan Satellite Launch Center", 
+            nameCn: "酒泉卫星发射中心", 
+            img: "https://kimi-web-img.moonshot.cn/img/www.gansu.gov.cn/6780e89252e7241df1ff13132c79c745f0d3b865.jpg",
+            desc: { en: "China's first and largest satellite launch center, the cradle of China's aerospace industry where Shenzhou spacecraft are launched.", cn: "中国第一个也是最大的卫星发射中心，中国航天工业的摇篮，神舟飞船发射地。" },
+            detail: {
+              en: "Jiuquan Satellite Launch Center, established in 1958, is China's first and largest comprehensive missile and satellite launch base. Located in the Gobi Desert, it has witnessed the launch of China's first satellite, first manned spacecraft Shenzhou-5, and numerous space missions. The center covers a vast area and features multiple launch towers, command centers, and testing facilities.",
+              cn: "酒泉卫星发射中心建于1958年，是中国第一个也是最大的综合性导弹和卫星发射基地。位于戈壁沙漠，见证了中国第一颗卫星、第一艘载人飞船神舟五号以及众多航天任务的发射。中心占地面积广阔，拥有多个发射塔、指挥中心和测试设施。"
+            }
+          },
+          { 
+            key: "mogao_grottoes",
+            name: "Mogao Grottoes", 
+            nameCn: "莫高窟", 
+            img: "https://kimi-web-img.moonshot.cn/img/pic3.zhimg.com/2e6b82d7bcb2f32b3d7a52a567d25ed6f7b9a362.jpg",
+            desc: { en: "A UNESCO World Heritage site with 735 caves featuring exquisite Buddhist art spanning 1,000 years.", cn: "联合国教科文组织世界遗产，735个石窟展示了跨越千年的精美佛教艺术。" },
+            detail: {
+              en: "Mogao Grottoes, also known as the Thousand Buddha Caves, is a UNESCO World Heritage site containing 735 caves with over 45,000 square meters of murals and 2,415 clay sculptures. Created over a span of 1,000 years from the 4th to the 14th century, the grottoes represent the pinnacle of Buddhist art in China.",
+              cn: "莫高窟，又称千佛洞，是联合国教科文组织世界遗产，包含735个石窟，拥有超过45000平方米的壁画和2415尊泥塑。从4世纪到14世纪历时千年创建，代表了中国佛教艺术的巅峰。"
+            }
+          },
+          { 
+            key: "mingsha_mountain",
+            name: "Mingsha Mountain & Crescent Spring", 
+            nameCn: "鸣沙山月牙泉", 
+            img: "https://kimi-web-img.moonshot.cn/img/www.gansu.gov.cn/b82c237ce188f2d82c2836063164075b1f04bbdf.jpg",
+            desc: { en: "A natural wonder where singing sand dunes surround a crescent-shaped oasis lake that never dries up.", cn: "自然奇观，鸣沙环绕着永不干涸的月牙形绿洲湖泊。" },
+            detail: {
+              en: "Mingsha Mountain and Crescent Spring is one of the most fascinating natural wonders in China. The sand dunes produce a singing sound when wind blows. At the foot of the dunes lies Crescent Spring, a crescent-shaped lake that has miraculously survived for thousands of years in the desert.",
+              cn: "鸣沙山月牙泉是中国最迷人的自然奇观之一。当风吹过或人们滑下时，沙丘会发出鸣响。沙丘脚下是月牙泉，一个月牙形的湖泊，在沙漠中神奇地存在了数千年而不干涸。"
+            }
+          },
+          { 
+            key: "yumen_pass",
+            name: "Yumen Pass", 
+            nameCn: "玉门关", 
+            img: "https://gips3.baidu.com/it/u=559380596,396445923&fm=3074&app=3074&f=JPEG",
+            desc: { en: "An ancient strategic pass on the Silk Road, known as the Jade Gate, marking the western frontier of ancient China.", cn: "古丝绸之路上的战略关隘，被称为玉门关，标志着古代中国的西部边疆。" },
+            detail: {
+              en: "Yumen Pass was a strategic frontier pass on the ancient Silk Road during the Han Dynasty. Located at the western end of the Hexi Corridor, it marked the boundary between ancient China and the Western Regions. The pass was famously mentioned in countless Tang Dynasty poems.",
+              cn: "玉门关是汉代古丝绸之路上的战略边疆关隘。位于河西走廊西端，标志着古代中国与西域的边界。它在无数唐诗中被提及。"
+            }
+          }
+        ]
+      },
+      tianshui: {
+        name: "TIANSHUI",
+        nameCn: "天水",
+        subtitle: "Birthplace of Fuxi Culture",
+        subtitleCn: "伏羲文化发源地",
+        bg: "https://gips2.baidu.com/it/u=3637116036,3810916637&fm=3074&app=3074&f=JPEG",
+        intro: {
+          en: "The origin place of Fuxi culture, with profound ancient history, mild climate and abundant forest resources in southern Gansu. It is considered one of the cradles of Chinese civilization.",
+          cn: "伏羲文化发源地，历史底蕴深厚，地处甘肃南部，气候温润、森林资源丰富。被认为是中华文明的摇篮之一。"
+        },
+        economy: {
+          en: "Equipment manufacturing, fruit agriculture (especially apples and cherries), and cultural tourism are core industries. The city is also developing high-tech industries.",
+          cn: "装备制造、林果农业（特别是苹果和樱桃）、人文文旅为核心产业。同时正在发展高科技产业。"
+        },
+        food: {
+          en: ["Guagua Noodles", "Hot Spicy Tofu", "Apple Preserve", "Rice Noodle Soup", "Tianshui Pork", "Pita Bread Soaked in Lamb Soup"],
+          cn: ["呱呱面皮", "麻辣豆腐", "苹果脯", "浆水面", "天水杂烩", "泡馍"]
+        },
+        spots: [
+          { 
+            key: "maijishan_grottoes",
+            name: "Maijishan Grottoes", 
+            nameCn: "麦积山石窟", 
+            img: "https://kimi-web-img.moonshot.cn/img/p0.itc.cn/d7ebd873d060316c63982d5d4e9f2d7ee8fb31a9.jpeg",
+            desc: { en: "One of China's four great grottoes, featuring thousands of Buddhist sculptures on a wheat-stack shaped mountain.", cn: "中国四大石窟之一，以麦垛状山体上的数千尊佛教雕塑闻名。" },
+            detail: {
+              en: "Maijishan Grottoes is one of China's four most famous Buddhist cave temple sites. The name means Wheat Stack Mountain due to its distinctive shape. The site contains 221 caves with over 7,800 clay sculptures and 1,000 square meters of murals.",
+              cn: "麦积山石窟是中国四大著名佛教石窟寺庙遗址之一。名称麦积山因其独特的麦垛形状而得名。遗址包含221个石窟，有7800多尊泥塑和1000平方米的壁画。"
+            }
+          },
+          { 
+            key: "fuxi_temple",
+            name: "Fuxi Temple", 
+            nameCn: "伏羲庙", 
+            img: "https://kimi-web-img.moonshot.cn/img/pic.gansudaily.com.cn/d70833b13708b1763fc6cf3c36837ed2272c4234.jpg",
+            desc: { en: "The largest and most complete ancient temple dedicated to Fuxi, the legendary ancestor of Chinese civilization.", cn: "最大、最完整的伏羲祭祀古庙，伏羲是中华文明传说中的始祖。" },
+            detail: {
+              en: "Fuxi Temple in Tianshui is the largest and most well-preserved ancient temple dedicated to Fuxi. Built during the Ming Dynasty, the temple complex covers over 10,000 square meters and features magnificent ancient architecture.",
+              cn: "天水伏羲庙是最大、保存最完好的伏羲祭祀古庙。建于明代，寺庙群占地超过10000平方米，拥有宏伟的古代建筑。"
+            }
+          },
+          { 
+            key: "nanguo_temple",
+            name: "Nanguo Temple", 
+            nameCn: "南郭寺", 
+            img: "https://kimi-web-img.moonshot.cn/img/www.gansu.gov.cn/5b6b8063ef21bb8093820978f3b4d37cfdb453ac.jpg",
+            desc: { en: "An ancient temple with a history of over 1,600 years, famous for its ancient cypress trees and poetic heritage.", cn: "拥有1600多年历史的古庙，以古柏和诗歌遗产闻名。" },
+            detail: {
+              en: "Nanguo Temple, built in the Northern Wei Dynasty over 1,600 years ago, is one of the oldest Buddhist temples in Gansu. The temple is famous for its ancient cypress trees, some of which are over 2,500 years old.",
+              cn: "南郭寺建于北魏时期，距今1600多年，是甘肃最古老的佛教寺庙之一。寺庙以古柏闻名，其中一些超过2500年历史。"
+            }
+          }
+        ]
+      },
+      jiayuguan: {
+        name: "JIAYUGUAN",
+        nameCn: "嘉峪关",
+        subtitle: "Great Wall Western Pass",
+        subtitleCn: "长城西起点",
+        bg: "https://copyright.bdstatic.com/vcg/creative/f32b11d040dbcefc1b873f3cecbca474.jpg@h_1280",
+        intro: {
+          en: "The western starting point of the Ming Great Wall, an important industrial city in the Hexi Corridor with a complete steel industry system. It marks the end of the Great Wall and the beginning of the Silk Road's western journey.",
+          cn: "明长城西起点，河西走廊重要工业城市，拥有完善钢铁工业体系。标志着长城的终点和丝绸之路西行的起点。"
+        },
+        economy: {
+          en: "Metallurgical steel manufacturing, industrial processing, and desert sightseeing constitute the economic main body. The city is one of China's important steel production bases.",
+          cn: "冶金钢铁、工业加工、荒漠观光构成经济主体。是中国重要的钢铁生产基地之一。"
+        },
+        food: {
+          en: ["Beef Offal Soup", "Roasted Lamb Chops", "Barley Porridge", "Wild Vegetable Salad", "Camel Meat", "Grilled Lamb Skewers"],
+          cn: ["牛羊杂汤", "烤羊排", "青稞粥", "山野凉菜", "驼肉", "烤羊肉串"]
+        },
+        spots: [
+          { 
+            key: "jiayuguan_pass",
+            name: "Jiayuguan Pass", 
+            nameCn: "嘉峪关关城", 
+            img: "https://kimi-web-img.moonshot.cn/img/res.klook.com/2fedcbef93d5614decb4eeb53d73f8c07787baec.jpg",
+            desc: { en: "The westernmost end of the Ming Great Wall, known as the First and Greatest Pass under Heaven.", cn: "明长城最西端，被誉为天下第一雄关。" },
+            detail: {
+              en: "Jiayuguan Pass, known as the First and Greatest Pass under Heaven, is the western terminus of the Ming Dynasty Great Wall. Built in 1372, the fortress is a magnificent example of ancient Chinese military architecture.",
+              cn: "嘉峪关，被誉为天下第一雄关，是明代长城的西端终点。建于1372年，堡垒是中国古代军事建筑的宏伟典范。"
+            }
+          },
+          { 
+            key: "overhanging_wall",
+            name: "Overhanging Great Wall", 
+            nameCn: "悬壁长城", 
+            img: "https://kimi-web-img.moonshot.cn/img/pic.gansudaily.com.cn/9affa5cce55324291a935418a87f33151a68ac3f.jpg",
+            desc: { en: "A dramatic section of the Great Wall built on a steep cliff, offering breathtaking views of the desert.", cn: "建在陡峭悬崖上的长城壮观段落，可俯瞰沙漠的壮丽景色。" },
+            detail: {
+              en: "The Overhanging Great Wall is a spectacular section of the Ming Great Wall built on a steep 45-degree cliff face. Stretching for 750 meters, this section appears to hang from the cliff, creating a dramatic visual effect.",
+              cn: "悬壁长城是明长城建在45度陡峭悬崖上的壮观段落。绵延750米，这段长城似乎悬挂在悬崖上，创造出戏剧性的视觉效果。"
+            }
+          },
+          { 
+            key: "wei_jin_tombs",
+            name: "Wei & Jin Tombs", 
+            nameCn: "魏晋墓群", 
+            img: "https://kimi-web-img.moonshot.cn/img/pic.gansudaily.com.cn/9b0f226f4d8f0c2f3861e29fec2a97ea42273a6b.jpg",
+            desc: { en: "Ancient tombs with well-preserved brick murals depicting daily life from the Wei and Jin dynasties.", cn: "保存完好的古墓群，砖壁画描绘了魏晋时期的日常生活。" },
+            detail: {
+              en: "The Wei and Jin Tombs near Jiayuguan contain over 1,400 underground tombs built between the 3rd and 5th centuries. The tombs are famous for their well-preserved brick murals that vividly depict daily life.",
+              cn: "嘉峪关附近的魏晋墓群包含1400多座建于3至5世纪的地下墓葬。这些墓葬以其保存完好的砖壁画而闻名，生动地描绘了魏晋时期的日常生活。"
+            }
+          }
+        ]
+      },
+      jinchang: {
+        name: "JINCHANG",
+        nameCn: "金昌",
+        subtitle: "Nickel Capital & Purple Flower Sea",
+        subtitleCn: "镍都紫金花海",
+        bg: "https://img1.baidu.com/it/u=3698799053,1350131250&fm=253&fmt=auto&app=120&f=JPEG?w=1200&h=800",
+        intro: {
+          en: "China's largest nickel production base and a rising eco-tourism city. Known as the 'Nickel Capital', Jinchang combines industrial strength with stunning natural landscapes including vast purple flower fields.",
+          cn: "中国最大的镍生产基地和新兴生态旅游城市。素有镍都之称，金昌将工业实力与壮丽的自然景观相结合，包括广阔的紫色花海。"
+        },
+        economy: {
+          en: "Nickel and cobalt mining, non-ferrous metal processing, new energy materials, and eco-tourism are the main economic drivers. Jinchang produces over 80% of China's nickel output.",
+          cn: "镍钴采矿、有色金属加工、新能源材料、生态旅游是主要经济驱动力。金昌生产中国80%以上的镍产量。"
+        },
+        food: {
+          en: ["Hand-pulled Lamb", "Stuffed Skin Noodles", "Roasted Whole Lamb", "Mutton Soup", "Flower Tea", "Honey Cake"],
+          cn: ["手抓羊肉", "酿皮子", "烤全羊", "羊肉汤", "花茶", "蜜饯"]
+        },
+        spots: [
+          { 
+            key: "purple_flower_sea",
+            name: "Purple Flower Sea", 
+            nameCn: "紫金花海", 
+            img: "https://kimi-web-img.moonshot.cn/img/x0.ifengimg.com/f119d8129eb54607e1bcd8ac18d861b97fc26bdb.jpg",
+            desc: { en: "A spectacular sea of purple lavender and sage flowers stretching across the city, creating a romantic landscape in the Gobi desert.", cn: "一片壮观的紫色薰衣草和鼠尾草花海横贯城市，在戈壁沙漠中创造出浪漫的景观。" },
+            detail: {
+              en: "The Purple Flower Sea in Jinchang covers hundreds of acres of blooming lavender and sage, transforming the desert city into a purple paradise. Best visited from June to September when the flowers are in full bloom. The area features walking paths, viewing platforms, and photography spots.",
+              cn: "金昌紫金花海覆盖数百亩盛开的薰衣草和鼠尾草，将这座沙漠城市变成了紫色的天堂。最佳游览时间是6月至9月花期盛开时。该区域设有步行道、观景平台和摄影点。"
+            }
+          },
+          { 
+            key: "liqian_city",
+            name: "Liqian Ancient City", 
+            nameCn: "骊靬古城", 
+            img: "https://kimi-web-img.moonshot.cn/img/pic.huitu.com/e51c3e0458a5c1c98328d6f675f6ae4d60505ba7.jpg",
+            desc: { en: "An ancient Roman-style settlement with unique architecture blending Eastern and Western cultures, linked to legendary Roman legionnaires.", cn: "一座古罗马风格的定居点，拥有融合东西方文化的独特建筑，与传说中的罗马军团士兵有关。" },
+            detail: {
+              en: "Liqian Ancient City is a fascinating archaeological site with architecture showing Roman influences. Legend suggests it was settled by Roman soldiers who wandered eastward. The site features a unique blend of Chinese and Roman architectural styles, including amphitheater-like structures.",
+              cn: "骊靬古城是一个迷人的考古遗址，建筑显示出罗马影响。传说它由向东流浪的罗马士兵定居。该遗址融合了中国和罗马建筑风格，包括类似圆形剧场的结构。"
+            }
+          },
+          { 
+            key: "mines_park",
+            name: "Jinchang Mines National Park", 
+            nameCn: "金川矿山公园", 
+            img: "https://kimi-web-img.moonshot.cn/img/x0.ifengimg.com/f119d8129eb54607e1bcd8ac18d861b97fc26bdb.jpg",
+            desc: { en: "A unique industrial tourism site showcasing the massive open-pit nickel mine, one of the world's largest.", cn: "一个独特的工业旅游景点，展示了巨大的露天镍矿，是世界上最大的镍矿之一。" },
+            detail: {
+              en: "Jinchang Mines National Park offers visitors a rare glimpse into industrial mining operations. The open-pit mine is one of the largest nickel mines globally, with terraced layers visible from viewing platforms. The park also features mining history museums and educational exhibits.",
+              cn: "金川矿山公园为游客提供了工业采矿作业的罕见一瞥。露天矿是全球最大的镍矿之一，从观景平台可以看到梯田状矿层。公园还设有采矿历史博物馆和教育展览。"
+            }
+          }
+        ]
+      },
+      baiyin: {
+        name: "BAIYIN",
+        nameCn: "白银",
+        subtitle: "Yellow River Stone Forest & Red Heritage",
+        subtitleCn: "黄河石林与红色 heritage",
+        bg: "https://pic.rmb.bdstatic.com/bjh/240122/dump/f699ad7394b25b907c1dbdc397b620bb.jpeg",
+        intro: {
+          en: "A city of industrial heritage and natural wonders, Baiyin is famous for the spectacular Yellow River Stone Forest and as the site of the historic Huining Red Army rendezvous.",
+          cn: "一座工业遗产和自然奇观之城，白银以壮观的黄河石林和会宁红军会师的历史遗址而闻名。"
+        },
+        economy: {
+          en: "Non-ferrous metal processing, new materials, agricultural products, and eco-tourism drive the economy. The city is transitioning from heavy industry to green development.",
+          cn: "有色金属加工、新材料、农产品、生态旅游推动经济发展。城市正在从重工业向绿色发展转型。"
+        },
+        food: {
+          en: ["Baiyin Roasted Lamb", "Stone Forest Noodles", "Yellow River Carp", "Sour Soup", "Stuffed Bun", "Hand-pulled Noodles"],
+          cn: ["白银烤羊", "石林面", "黄河鲤鱼", "酸汤", "包子", "拉条子"]
+        },
+        spots: [
+          { 
+            key: "yellow_river_stone_forest",
+            name: "Yellow River Stone Forest", 
+            nameCn: "黄河石林", 
+            img: "https://kimi-web-img.moonshot.cn/img/pic.cyol.com/3358c1023266cea25503f7fd44890b55f53808de.jpeg",
+            desc: { en: "A stunning geological park featuring towering stone pillars and dramatic canyon landscapes formed by the Yellow River over millions of years.", cn: "一个令人惊叹的地质公园，以高耸的石柱和由黄河经过数百万年形成的壮观峡谷景观为特色。" },
+            detail: {
+              en: "The Yellow River Stone Forest in Jingtai County features spectacular stone pillars up to 200 meters tall, formed by water erosion over millions of years. The park includes the famous 22-bend mountain road, offering breathtaking views. Visitors can explore by raft, horseback, or on foot.",
+              cn: "景泰县黄河石林拥有高达200米的壮观石柱，由水蚀作用经过数百万年形成。公园包括著名的22道弯山路，提供 breathtaking 景色。游客可以乘筏、骑马或步行探索。"
+            }
+          },
+          { 
+            key: "huining_rendezvous",
+            name: "Huining Red Army Rendezvous Site", 
+            nameCn: "会宁红军会师旧址", 
+            img: "https://kimi-web-img.moonshot.cn/img/www.gs.gov.cn/430696595e3eb5643e752eaaed2976a70ca90913.jpg",
+            desc: { en: "The historic site where the three main Red Army forces joined in 1936, marking a pivotal moment in Chinese revolutionary history.", cn: "1936年三大主力红军会师的历史遗址，标志着中国革命史上的关键时刻。" },
+            detail: {
+              en: "The Huining Red Army Rendezvous Site commemorates the historic meeting of the First, Second, and Fourth Front Armies of the Red Army in October 1936. The site includes the original meeting tower, memorial hall, and preserved revolutionary buildings. It is a national patriotic education base.",
+              cn: "会宁红军会师旧址纪念1936年10月红军第一、二、四方面军的历史性会师。遗址包括原会师塔、纪念馆和保存的革命建筑。它是国家级爱国主义教育基地。"
+            }
+          },
+          { 
+            key: "temple_mountain",
+            name: "Temple Mountain Scenic Area", 
+            nameCn: "法泉寺风景区", 
+            img: "https://kimi-web-img.moonshot.cn/img/picn.huitu.com/04010023b4be72fc45ca3018bdf1cc345e782550.jpg",
+            desc: { en: "A beautiful scenic area combining Buddhist temples, natural caves, and mountain landscapes in the loess plateau region.", cn: "一个美丽的风景区，融合了佛教寺庙、天然洞穴和黄土高原地区的山景。" },
+            detail: {
+              en: "Temple Mountain Scenic Area features ancient Buddhist temples built into natural caves, surrounded by beautiful mountain scenery. The area includes cliff carvings, ancient pagodas, and peaceful meditation spots. It offers a serene escape from urban life.",
+              cn: "法泉寺风景区以建于天然洞穴中的古佛教寺庙为特色，周围环绕着美丽的山景。该区域包括悬崖雕刻、古塔和宁静的冥想场所。它提供了一个远离城市生活的宁静去处。"
+            }
+          }
+        ]
+      },
+      wuwei: {
+        name: "WUWEI",
+        nameCn: "武威",
+        subtitle: "Ancient Liangzhou & Buddhist Heritage",
+        subtitleCn: "古凉州与佛教 heritage",
+        bg: "https://img0.baidu.com/it/u=2470057257,1191923195&fm=253&app=120&f=JPEG?w=1422&h=800",
+        intro: {
+          en: "Known historically as Liangzhou, Wuwei was a crucial hub on the ancient Silk Road. The city is famous for the Leitai Han Tombs and its rich Buddhist cultural heritage.",
+          cn: "历史上被称为凉州，武威是古丝绸之路上的重要枢纽。这座城市以雷台汉墓和丰富的佛教文化遗产而闻名。"
+        },
+        economy: {
+          en: "Wine industry, agricultural products, cultural tourism, and renewable energy are the main economic sectors. Wuwei is one of China's emerging wine-producing regions.",
+          cn: "葡萄酒产业、农产品、文化旅游、可再生能源是主要经济部门。武威是中国新兴葡萄酒产区之一。"
+        },
+        food: {
+          en: ["Wuwei Noodles", "Three-color Donkey Meat", "Stuffed Skin", "Roasted Lamb", "Wine", "Hand-grabbed Mutton"],
+          cn: ["武威面条", "三色驴肉", "酿皮子", "烤羊肉", "葡萄酒", "手抓羊肉"]
+        },
+        spots: [
+          { 
+            key: "leitai_tomb",
+            name: "Leitai Han Tombs", 
+            nameCn: "雷台汉墓", 
+            img: "https://kimi-web-img.moonshot.cn/img/picn.huitu.com/18c607b1f07aee2d8e709f6a2e6ff8510ba365a5.jpg",
+            desc: { en: "The famous Han Dynasty tomb where the iconic Bronze Galloping Horse was discovered, a national treasure of China.", cn: "著名的汉代墓葬，出土了标志性的铜奔马，是中国的国宝。" },
+            detail: {
+              en: "Leitai Han Tombs, dating back to the Eastern Han Dynasty, is world-famous as the discovery site of the Bronze Galloping Horse (also known as the Flying Horse of Gansu). This masterpiece of bronze casting has become a symbol of Chinese tourism. The tomb complex includes underground chambers with well-preserved artifacts.",
+              cn: "雷台汉墓可追溯至东汉时期，以铜奔马（又称甘肃飞马）的发现地而闻名世界。这件青铜铸造的杰作已成为中国旅游的象征。墓葬群包括保存完好的文物地下墓室。"
+            }
+          },
+          { 
+            key: "kumarajiva_temple",
+            name: "Kumarajiva Temple", 
+            nameCn: "鸠摩罗什寺", 
+            img: "https://kimi-web-img.moonshot.cn/img/pic.huitu.com/4a62d765db212da9781910dcf2946f1f82a40715.jpg",
+            desc: { en: "A historic Buddhist temple dedicated to the great translator Kumarajiva, who translated numerous Buddhist scriptures into Chinese.", cn: "一座历史悠久的佛教寺庙，供奉伟大的翻译家鸠摩罗什，他将众多佛经翻译成中文。" },
+            detail: {
+              en: "Kumarajiva Temple is dedicated to the legendary Buddhist translator Kumarajiva, who lived in the 4th century. The temple features a 33-meter tall pagoda built to enshrine his sarira (relics). It is one of the most important Buddhist sites in northwest China.",
+              cn: "鸠摩罗什寺供奉传奇佛教翻译家鸠摩罗什，他生活在4世纪。寺庙内有一座33米高的宝塔，用于供奉他的舍利。它是西北地区最重要的佛教遗址之一。"
+            }
+          },
+          { 
+            key: "wuwei_confucian",
+            name: "Wuwei Confucian Temple", 
+            nameCn: "武威文庙", 
+            img: "https://kimi-web-img.moonshot.cn/img/assets.699pic.com/01b2044316823eea60d0c58894ba2fa861c105a1.v1",
+            desc: { en: "One of the largest and best-preserved Confucian temples in Gansu, featuring magnificent ancient architecture and cultural relics.", cn: "甘肃最大、保存最完好的孔庙之一，拥有宏伟的古代建筑和文物。" },
+            detail: {
+              en: "Wuwei Confucian Temple, built during the Ming Dynasty, is one of the largest Confucian temples in northwest China. The complex features traditional Chinese architecture with ornate carvings, ancient cypress trees, and a large collection of stone steles with historical inscriptions.",
+              cn: "武威文庙建于明代，是西北地区最大的孔庙之一。建筑群以传统中国建筑为特色，拥有华丽的雕刻、古柏和大量刻有历史铭文的石碑。"
+            }
+          }
+        ]
+      },
+      pingliang: {
+        name: "PINGLIANG",
+        nameCn: "平凉",
+        subtitle: "Kongtong Mountain Taoist Sanctuary",
+        subtitleCn: "崆峒山道教圣地",
+        bg: "https://photo.tuchong.com/1566256/f/128104789.jpg",
+        intro: {
+          en: "Home to the sacred Kongtong Mountain, one of the birthplaces of Taoism. Pingliang combines spiritual heritage with beautiful natural scenery and is known as the 'Apple Town' of Gansu.",
+          cn: "神圣的崆峒山所在地，道教的发源地之一。平凉将精神遗产与美丽的自然风光相结合，被誉为甘肃的苹果之乡。"
+        },
+        economy: {
+          en: "Apple cultivation, coal mining, building materials, and tourism are the main industries. Pingliang produces some of China's finest apples.",
+          cn: "苹果种植、煤炭开采、建材、旅游是主要产业。平凉生产中国最好的苹果之一。"
+        },
+        food: {
+          en: ["Pingliang Lamb", "Stuffed Skin", "Apple Pie", "Yellow River Carp", "Hand-pulled Noodles", "Tofu Pudding"],
+          cn: ["平凉羊肉", "酿皮子", "苹果派", "黄河鲤鱼", "拉条子", "豆腐脑"]
+        },
+        spots: [
+          { 
+            key: "kongtong_mountain",
+            name: "Kongtong Mountain", 
+            nameCn: "崆峒山", 
+            img: "https://kimi-web-img.moonshot.cn/img/pic.people.com.cn/5c9a4c867f34b68e91a56b61d3ffdb15eb7bb254.jpg",
+            desc: { en: "One of the sacred mountains of Taoism, featuring stunning cliffside temples, ancient architecture, and breathtaking mountain scenery.", cn: "道教名山之一，以悬崖寺庙、古建筑和 breathtaking 山景为特色。" },
+            detail: {
+              en: "Kongtong Mountain is one of the most important Taoist sacred mountains in China. The mountain features ancient temples built into dramatic cliff faces, dating back over 1,500 years. It is said to be the place where the Yellow Emperor sought immortality. The mountain offers spectacular views and is especially beautiful in autumn when the foliage changes color.",
+              cn: "崆峒山是中国最重要的道教名山之一。山体以建于壮观悬崖上的古庙为特色，可追溯至1500多年前。相传是黄帝求仙问道之地。山景壮观，尤其在秋天树叶变色时格外美丽。"
+            }
+          },
+          { 
+            key: "longshan_temple",
+            name: "Longshan Temple", 
+            nameCn: "龙泉寺", 
+            img: "https://kimi-web-img.moonshot.cn/img/picn.huitu.com/78c2048078f9a62a77de612bec855bd7b0cc57fa.jpg",
+            desc: { en: "An ancient temple complex nestled in the mountains, famous for its crystal clear spring water and ancient trees.", cn: "一座 nestled 在山中的古庙群，以清澈的泉水和古树闻名。" },
+            detail: {
+              en: "Longshan Temple is a historic Buddhist temple complex located in the mountains of Chongxin County. The temple is famous for its ancient dragon spring that never runs dry, ancient cypress trees over 1,000 years old, and well-preserved Ming Dynasty architecture.",
+              cn: "龙泉寺是位于崇信县山区的历史悠久的佛教寺庙群。寺庙以永不干涸的古龙泉、超过1000年历史的古柏和保存完好的明代建筑而闻名。"
+            }
+          },
+          { 
+            key: "yuntai_mountain",
+            name: "Yuntai Mountain", 
+            nameCn: "云崖寺", 
+            img: "https://kimi-web-img.moonshot.cn/img/pic.people.com.cn/5c9a4c867f34b68e91a56b61d3ffdb15eb7bb254.jpg",
+            desc: { en: "A scenic mountain area with ancient cave temples carved into the cliffs, offering a peaceful retreat with stunning natural beauty.", cn: "一个风景优美的山区，悬崖上雕刻着古老的洞穴寺庙，提供宁静的去处和 stunning 自然美景。" },
+            detail: {
+              en: "Yuntai Mountain features ancient Buddhist cave temples carved into the mountain cliffs during the Northern Wei Dynasty. The site includes over 30 caves with Buddhist sculptures and murals, surrounded by beautiful forest and mountain scenery.",
+              cn: "云崖寺以北魏时期雕刻在山崖上的古佛教石窟寺庙为特色。遗址包括30多个石窟，内有佛教雕塑和壁画，周围环绕着美丽的森林和山景。"
+            }
+          }
+        ]
+      },
+      dingxi: {
+        name: "DINGXI",
+        nameCn: "定西",
+        subtitle: "Chinese Medicine Capital & Potato Hometown",
+        subtitleCn: "中国药都与马铃薯之乡",
+        bg: "https://imagepphcloud.thepaper.cn/pph/image/199/8/43.jpg",
+        intro: {
+          en: "Known as the 'Chinese Medicine Capital' and 'Potato Hometown', Dingxi is a city of agricultural abundance and the source of the Wei River, one of the Yellow River's major tributaries.",
+          cn: "素有中国药都和马铃薯之乡之称，定西是一座农业丰饶之城，也是黄河主要支流渭河的发源地。"
+        },
+        economy: {
+          en: "Traditional Chinese medicine cultivation, potato processing, livestock breeding, and eco-tourism are the core industries. Dingxi produces over 30% of China's medicinal herbs.",
+          cn: "中药材种植、马铃薯加工、畜牧养殖、生态旅游是核心产业。定西生产中国30%以上的中药材。"
+        },
+        food: {
+          en: ["Dingxi Potato Dishes", "Angelica Sinensis Soup", "Hand-pulled Noodles", "Stuffed Skin", "Mutton Soup", "Buckwheat Noodles"],
+          cn: ["定西土豆宴", "当归汤", "拉条子", "酿皮子", "羊肉汤", "荞麦面"]
+        },
+        spots: [
+          { 
+            key: "weihe_source",
+            name: "Wei River Source", 
+            nameCn: "渭河源", 
+            img: "https://kimi-web-img.moonshot.cn/img/p2.itc.cn/a63f1d2a1f60d9495785f3af8358f955984773d9.jpeg",
+            desc: { en: "The source of the Wei River, featuring beautiful mountain scenery, ancient temples, and the legendary birthplace of Chinese civilization.", cn: "渭河的发源地，以美丽的山景、古庙和中华文明传说中的诞生地为特色。" },
+            detail: {
+              en: "The Wei River Source Scenic Area is located in Weiyuan County, marking the birthplace of the Wei River. The area features beautiful mountain landscapes, ancient temples, and cultural sites related to the legendary Yu the Great. It is a popular destination for hiking and nature exploration.",
+              cn: "渭河源风景区位于渭源县，标志着渭河的发源地。该区域以美丽的山景、古庙和与大禹传说相关的文化遗址为特色。它是徒步旅行和自然探索的热门目的地。"
+            }
+          },
+          { 
+            key: "langmu_temple",
+            name: "Langmu Temple", 
+            nameCn: "狼渡滩草原", 
+            img: "https://kimi-web-img.moonshot.cn/img/pic.huitu.com/da07e1e4e0cbcb94addba90223106a87a67b41ab.jpg",
+            desc: { en: "A vast alpine grassland with stunning prairie scenery, traditional Tibetan culture, and excellent hiking trails.", cn: "一片广阔的高山草原，拥有 stunning 草原风光、传统藏族文化和绝佳的徒步小径。" },
+            detail: {
+              en: "Langdu Grassland is a vast alpine meadow located in Min County. The grassland features stunning natural scenery with rolling hills, wildflowers, and traditional Tibetan herding culture. It is an ideal destination for hiking, camping, and experiencing grassland culture.",
+              cn: "狼渡滩草原位于岷县，是一片广阔的高山草甸。草原以起伏的山丘、野花和传统藏族游牧文化的 stunning 自然风光为特色。它是徒步旅行、露营和体验草原文化的理想目的地。"
+            }
+          },
+          { 
+            key: "medicine_garden",
+            name: "Chinese Medicine Botanical Garden", 
+            nameCn: "中药材植物园", 
+            img: "https://kimi-web-img.moonshot.cn/img/pic.huitu.com/da07e1e4e0cbcb94addba90223106a87a67b41ab.jpg",
+            desc: { en: "A specialized botanical garden showcasing hundreds of medicinal plant species used in traditional Chinese medicine.", cn: "一个专门的植物园，展示了数百种用于传统中医药的药用植物。" },
+            detail: {
+              en: "The Chinese Medicine Botanical Garden in Dingxi displays over 300 species of medicinal plants, including famous herbs like Angelica sinensis (Danggui) and Astragalus. The garden serves as both a tourist attraction and a research center for traditional Chinese medicine.",
+              cn: "定西中药材植物园展示了300多种药用植物，包括著名的草药如当归和黄芪。该花园既是旅游景点，也是中医药研究中心。"
+            }
+          }
+        ]
+      },
+      longnan: {
+        name: "LONGNAN",
+        nameCn: "陇南",
+        subtitle: "Little Jiangnan of Gansu",
+        subtitleCn: "甘肃小江南",
+        bg: "https://q3.itc.cn/images01/20251020/23787003526d4e61998b5b6bce56cff3.jpeg",
+        intro: {
+          en: "Located in southeastern Gansu, Longnan is known as the 'Little Jiangnan' for its lush landscapes, mild climate, and abundant water resources. It is a paradise of natural beauty and ethnic diversity.",
+          cn: "位于甘肃东南部，陇南因其 lush 景观、温和的气候和丰富的水资源而被称为甘肃小江南。它是自然美景和民族多样性的天堂。"
+        },
+        economy: {
+          en: "Agricultural products (olive oil, walnuts, tea), eco-tourism, and hydropower are the main economic sectors. Longnan produces over 60% of China's olive oil.",
+          cn: "农产品（橄榄油、核桃、茶叶）、生态旅游、水电是主要经济部门。陇南生产中国60%以上的橄榄油。"
+        },
+        food: {
+          en: ["Longnan Olive Oil", "Walnut Cake", "Tea", "Rice Noodles", "Stuffed Skin", "Hand-pulled Lamb"],
+          cn: ["陇南橄榄油", "核桃饼", "茶叶", "米粉", "酿皮子", "手抓羊肉"]
+        },
+        spots: [
+          { 
+            key: "guanegou",
+            name: "Guanegou Scenic Area", 
+            nameCn: "官鹅沟", 
+            img: "https://kimi-web-img.moonshot.cn/img/www.gansu.gov.cn/3178d5a9d03291868c8e0115a8ed1baaf96085d0.jpg",
+            desc: { en: "A stunning national park featuring crystal clear lakes, cascading waterfalls, and lush forests, often called the 'Little Jiuzhaigou'.", cn: "一个令人惊叹的国家公园，以清澈的湖泊、层叠的瀑布和 lush 森林为特色，常被称为小九寨沟。" },
+            detail: {
+              en: "Guanegou is a spectacular scenic area featuring a series of interconnected lakes and waterfalls surrounded by lush forests. The water displays stunning turquoise and emerald colors. The area is home to diverse wildlife and offers excellent hiking trails through pristine nature.",
+              cn: "官鹅沟是一个壮观的风景区，以一系列相互连接的湖泊和瀑布为特色，周围环绕着 lush 森林。湖水呈现出 stunning 的 turquoise 和 emerald 色。该区域是多种野生动物的家园，提供穿过原始自然的绝佳徒步小径。"
+            }
+          },
+          { 
+            key: "wanxiang_cave",
+            name: "Wanxiang Cave", 
+            nameCn: "万象洞", 
+            img: "https://kimi-web-img.moonshot.cn/img/picn.huitu.com/25604bcaae65dd551ce430edb0d25980e00fc16d.jpg",
+            desc: { en: "One of China's largest karst caves, featuring magnificent stalactites, stalagmites, and underground rivers with stunning formations.", cn: "中国最大的喀斯特洞穴之一，以壮观的钟乳石、石笋和地下河以及 stunning 形态为特色。" },
+            detail: {
+              en: "Wanxiang Cave is one of the largest karst caves in northern China. The cave system extends over 5 kilometers and features spectacular stalactites, stalagmites, and underground rivers. The formations create a magical underground world with chambers named after mythical figures and scenes.",
+              cn: "万象洞是中国北方最大的喀斯特洞穴之一。洞穴系统延伸超过5公里，以壮观的钟乳石、石笋和地下河为特色。这些形态创造了一个神奇的地下世界，洞室以神话人物和场景命名。"
+            }
+          },
+          { 
+            key: "xixiasong",
+            name: "Xixia Song Scenic Area", 
+            nameCn: "西狭颂", 
+            img: "https://kimi-web-img.moonshot.cn/img/www.gansu.gov.cn/3178d5a9d03291868c8e0115a8ed1baaf96085d0.jpg",
+            desc: { en: "A historic scenic area featuring ancient cliff inscriptions and beautiful canyon scenery along a pristine river.", cn: "一个历史悠久的景区，以古代悬崖题刻和原始河流沿岸美丽的峡谷风光为特色。" },
+            detail: {
+              en: "Xixia Song features ancient cliff inscriptions dating back to the Han Dynasty, carved into the canyon walls. The area combines historical significance with beautiful natural scenery, including a pristine river and dramatic canyon landscapes. It is an important site for studying ancient Chinese calligraphy.",
+              cn: "西狭颂以可追溯至汉代的古代悬崖题刻为特色，雕刻在峡谷墙壁上。该区域将历史意义与美丽的自然风光相结合，包括原始河流和壮观的峡谷景观。它是研究中国古代书法的重要场所。"
+            }
+          }
+        ]
+      }
+    };
+
+    // ==================== 全局状态 ====================
+    let currentLang = "en";
+    let activeCityKey = "";
+    let activeSpotKey = "";
+    let currentIndex = 0;
+    let autoPlayInterval = null;
+    let touchStartX = 0;
+    let touchEndX = 0;
+    let heroPaused = false;
+
+    // ==================== 轮播初始化 ====================
+    const carouselWrap = document.getElementById("carouselWrap");
+    const carouselDots = document.getElementById("carouselDots");
+    const heroTitle = document.getElementById("heroTitle");
+    const heroDesc = document.getElementById("heroDesc");
+    const heroSubtitle = document.getElementById("heroSubtitle");
+    const cityKeys = Object.keys(cityData);
+    const total = cityKeys.length;
+
+    // 生成轮播项
+    function initCarousel() {
+      carouselWrap.innerHTML = "";
+      carouselDots.innerHTML = "";
+
+      cityKeys.forEach((key, idx) => {
+        const city = cityData[key];
+        const item = document.createElement("div");
+        item.className = "carousel-item absolute inset-0 opacity-0 smooth-transition";
+        item.style.opacity = idx === 0 ? "1" : "0";
+        item.style.pointerEvents = idx === 0 ? "auto" : "none";
+        item.style.zIndex = idx === 0 ? "1" : "0";
+        item.innerHTML = `
+          <img src="${city.bg}" alt="${city.name}" 
+            class="w-full h-full object-cover img-filter cursor-pointer smooth-transition hover:scale-105"
+            data-city="${key}" loading="${idx === 0 ? 'eager' : 'lazy'}"
+            onerror="this.src='https://images.unsplash.com/photo-1472214103451-9374bd1c798e?w=1920&q=80'" />
+        `;
+        carouselWrap.appendChild(item);
+
+        // 创建指示点
+        const dot = document.createElement("button");
+        dot.className = `carousel-dot w-2 h-2 rounded-full smooth-transition ${idx === 0 ? 'active' : 'bg-white/30'}`;
+        dot.onclick = () => goToSlide(idx);
+        carouselDots.appendChild(dot);
+      });
+
+      // 绑定图片点击事件
+      document.querySelectorAll('.carousel-item img').forEach(img => {
+        img.addEventListener('click', (e) => {
+          const cityKey = e.target.dataset.city;
+          openCityModal(cityKey);
+        });
+      });
+    }
+
+    function updateHeroText() {
+      const city = cityData[cityKeys[currentIndex]];
+      heroTitle.textContent = city.name;
+      heroDesc.textContent = currentLang === "en" ? city.subtitle : city.subtitleCn;
+      heroSubtitle.textContent = currentLang === "en" ? "Discover Gansu" : "探索甘肃";
+
+      // 重新触发动画
+      heroTitle.classList.remove('fade-in');
+      heroDesc.classList.remove('fade-in');
+      void heroTitle.offsetWidth; // 触发重排
+      heroTitle.classList.add('fade-in');
+      heroDesc.classList.add('fade-in');
+    }
+
+    function goToSlide(index) {
+      if (index < 0) index = total - 1;
+      if (index >= total) index = 0;
+      currentIndex = index;
+
+      const items = document.querySelectorAll(".carousel-item");
+      items.forEach((item, idx) => {
+        item.style.opacity = idx === currentIndex ? "1" : "0";
+        item.style.pointerEvents = idx === currentIndex ? "auto" : "none";
+        item.style.zIndex = idx === currentIndex ? "1" : "0";
+      });
+
+      // 更新指示点
+      const dots = document.querySelectorAll(".carousel-dot");
+      dots.forEach((dot, idx) => {
+        if (idx === currentIndex) {
+          dot.classList.add('active');
+          dot.classList.remove('bg-white/30');
+        } else {
+          dot.classList.remove('active');
+          dot.classList.add('bg-white/30');
+        }
+      });
+
+      updateHeroText();
+    }
+
+    function nextSlide() { goToSlide(currentIndex + 1); }
+    function prevSlide() { goToSlide(currentIndex - 1); }
+
+    // 翻页事件
+    document.getElementById("nextBtn").addEventListener("click", nextSlide);
+    document.getElementById("prevBtn").addEventListener("click", prevSlide);
+
+    // 键盘支持
+    document.addEventListener("keydown", (e) => {
+      if (heroPaused) return;
+      if (e.key === "ArrowRight") nextSlide();
+      if (e.key === "ArrowLeft") prevSlide();
+    });
+
+    // 触摸支持
+    const heroSection = document.getElementById("heroSection");
+    heroSection.addEventListener("touchstart", (e) => { touchStartX = e.changedTouches[0].screenX; });
+    heroSection.addEventListener("touchend", (e) => {
+      if (heroPaused) return;
+      touchEndX = e.changedTouches[0].screenX;
+      if (touchStartX - touchEndX > 50) nextSlide();
+      if (touchEndX - touchStartX > 50) prevSlide();
+    });
+
+    // 自动轮播
+    function startAutoPlay() {
+      if (heroPaused) return;
+      autoPlayInterval = setInterval(nextSlide, 6000);
+    }
+    function stopAutoPlay() {
+      if (autoPlayInterval) clearInterval(autoPlayInterval);
+    }
+    startAutoPlay();
+    heroSection.addEventListener("mouseenter", stopAutoPlay);
+    heroSection.addEventListener("mouseleave", () => { if (!heroPaused) startAutoPlay(); });
+
+    // ==================== 语言切换函数 ====================
+    function switchLang(lang) {
+      currentLang = lang;
+
+      // 更新所有语言切换按钮状态
+      document.querySelectorAll('.lang-switch, .lang-switch-top, .lang-switch-spot').forEach(btn => {
+        if (btn.dataset.lang === lang) {
+          btn.style.color = '#b4a484';
+          btn.style.border = '1px solid rgba(180,164,132,0.3)';
+        } else {
+          btn.style.color = '#9494a0';
+          btn.style.border = '1px solid rgba(255,255,255,0.1)';
+        }
+      });
+
+      // 切换所有语言元素 - 修复：使用更可靠的方法
+      const allElements = document.querySelectorAll(".lang-en, .lang-cn");
+      allElements.forEach(el => {
+        if (el.classList.contains('lang-en')) {
+          el.style.display = lang === "en" ? "" : "none";
+        }
+        if (el.classList.contains('lang-cn')) {
+          el.style.display = lang === "cn" ? "" : "none";
+        }
+      });
+
+      // 更新hero文字
+      updateHeroText();
+
+      // 如果城市弹窗打开，重新渲染
+      const cityModal = document.getElementById("cityModal");
+      if (cityModal.style.pointerEvents === "auto" && activeCityKey) {
+        renderDetail(cityData[activeCityKey]);
+      }
+
+      // 如果景点详情打开，重新渲染
+      const spotModal = document.getElementById("spotDetailModal");
+      if (spotModal.style.pointerEvents === "auto" && activeSpotKey && activeCityKey) {
+        const spot = cityData[activeCityKey].spots.find(s => s.key === activeSpotKey);
+        if (spot) renderSpotDetail(spot);
+      }
+    }
+
+    // 绑定语言切换按钮 - 修复：确保所有按钮都能正确触发
+    function bindLangSwitch() {
+      document.querySelectorAll('.lang-switch, .lang-switch-top, .lang-switch-spot').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          switchLang(e.target.dataset.lang);
+        });
+      });
+    }
+
+    // ==================== 渲染城市详情 ====================
+    function renderDetail(data) {
+      const modalContent = document.getElementById("modalContent");
+
+      const enFoodList = data.food.en.map(item => `<p class="text-sm text-insMuted">&bull; ${item}</p>`).join("");
+      const cnFoodList = data.food.cn.map(item => `<p class="text-sm text-insMuted">&bull; ${item}</p>`).join("");
+
+      const spotHtml = data.spots.map((s, idx) => `
+        <div class="spot-card glass rounded-xl overflow-hidden cursor-pointer smooth-transition group" 
+             onclick="openSpotDetail('${s.key}')" style="animation: slideUp 0.5s ease ${idx * 0.1}s forwards; opacity: 0;">
+          <div class="relative overflow-hidden aspect-[4/3]">
+            <img src="${s.img}" alt="${s.name}" 
+              class="spot-img w-full h-full object-cover smooth-transition"
+              onerror="this.src='https://images.unsplash.com/photo-1472214103451-9374bd1c798e?w=800&q=80'" />
+            <div class="spot-overlay absolute inset-0 bg-black/40 flex items-center justify-center">
+              <span class="text-white text-xs tracking-widest uppercase border border-white/30 px-4 py-2 rounded-full">
+                <span class="lang-en">View Details</span>
+                <span class="lang-cn">查看详情</span>
+              </span>
+            </div>
+          </div>
+          <div class="p-4">
+            <h5 class="text-sm font-medium text-white mb-1">
+              <span class="lang-en">${s.name}</span>
+              <span class="lang-cn">${s.nameCn}</span>
+            </h5>
+            <p class="text-xs text-insMuted line-clamp-2">
+              <span class="lang-en">${s.desc.en}</span>
+              <span class="lang-cn">${s.desc.cn}</span>
+            </p>
+          </div>
+        </div>
+      `).join("");
+
+      modalContent.innerHTML = `
+        <div class="slide-up">
+          <h2 class="text-4xl md:text-6xl font-display font-light tracking-widest uppercase mb-2">${data.name}</h2>
+          <p class="text-insAccent text-xs tracking-[0.3em] uppercase mb-8">
+            <span class="lang-en">${data.subtitle}</span>
+            <span class="lang-cn">${data.subtitleCn}</span>
+          </p>
+
+          <div class="mb-10">
+            <p class="text-insMuted leading-relaxed text-sm md:text-base lang-en">${data.intro.en}</p>
+            <p class="text-insMuted leading-relaxed text-sm md:text-base lang-cn">${data.intro.cn}</p>
+          </div>
+
+          <div class="grid md:grid-cols-2 gap-4 mb-10">
+            <div class="glass p-6 rounded-xl">
+              <h4 class="text-xs text-insAccent tracking-[0.2em] mb-4 uppercase flex items-center gap-2">
+                <i class="fa fa-briefcase"></i>
+                <span class="lang-en">Economic Advantage</span>
+                <span class="lang-cn">城市优势</span>
+              </h4>
+              <p class="text-sm text-insMuted leading-relaxed lang-en">${data.economy.en}</p>
+              <p class="text-sm text-insMuted leading-relaxed lang-cn">${data.economy.cn}</p>
+            </div>
+            <div class="glass p-6 rounded-xl">
+              <h4 class="text-xs text-insAccent tracking-[0.2em] mb-4 uppercase flex items-center gap-2">
+                <i class="fa fa-cutlery"></i>
+                <span class="lang-en">Local Cuisine</span>
+                <span class="lang-cn">特色美食</span>
+              </h4>
+              <div class="space-y-1 lang-en">${enFoodList}</div>
+              <div class="space-y-1 lang-cn">${cnFoodList}</div>
+            </div>
+          </div>
+
+          <div>
+            <h4 class="text-xs text-insAccent tracking-[0.2em] mb-6 uppercase flex items-center gap-2">
+              <i class="fa fa-map-marker"></i>
+              <span class="lang-en">Tourist Attractions</span>
+              <span class="lang-cn">旅游景点</span>
+            </h4>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              ${spotHtml}
+            </div>
+          </div>
+        </div>
+      `;
+
+      // 立即应用当前语言
+      const allElements = document.querySelectorAll(".lang-en, .lang-cn");
+      allElements.forEach(el => {
+        if (el.classList.contains('lang-en')) {
+          el.style.display = currentLang === "en" ? "" : "none";
+        }
+        if (el.classList.contains('lang-cn')) {
+          el.style.display = currentLang === "cn" ? "" : "none";
+        }
+      });
+    }
+
+    // ==================== 打开城市弹窗 ====================
+    function openCityModal(cityKey) {
+      activeCityKey = cityKey;
+      const data = cityData[cityKey];
+      const modalBg = document.getElementById("modalBg");
+      modalBg.style.backgroundImage = `url(${data.bg})`;
+      renderDetail(data);
+
+      const modal = document.getElementById("cityModal");
+      modal.style.opacity = "1";
+      modal.style.pointerEvents = "auto";
+      document.body.style.overflow = "hidden";
+
+      // 暂停轮播
+      heroPaused = true;
+      stopAutoPlay();
+
+      // 隐藏轮播
+      const heroSection = document.getElementById("heroSection");
+      heroSection.style.opacity = "0";
+      heroSection.style.pointerEvents = "none";
+      heroSection.style.transition = "opacity 0.6s ease";
+    }
+
+    // 关闭城市弹窗
+    document.getElementById("closeModal").addEventListener("click", () => {
+      const modal = document.getElementById("cityModal");
+      modal.style.opacity = "0";
+      modal.style.pointerEvents = "none";
+      document.body.style.overflow = "";
+      activeCityKey = "";
+
+      // 恢复轮播
+      heroPaused = false;
+      const heroSection = document.getElementById("heroSection");
+      heroSection.style.opacity = "1";
+      heroSection.style.pointerEvents = "auto";
+      startAutoPlay();
+    });
+
+    // ==================== 景点详情页面 ====================
+    function renderSpotDetail(spot) {
+      const content = document.getElementById("spotDetailContent");
+
+      content.innerHTML = `
+        <div class="slide-up">
+          <div class="relative rounded-2xl overflow-hidden mb-8 aspect-[21/9]">
+            <img src="${spot.img}" alt="${spot.name}" 
+              class="w-full h-full object-cover img-filter"
+              onerror="this.src='https://images.unsplash.com/photo-1472214103451-9374bd1c798e?w=1200&q=80'" />
+            <div class="absolute inset-0 bg-gradient-to-t from-insDark/80 to-transparent"></div>
+            <div class="absolute bottom-6 left-6 md:bottom-8 md:left-8">
+              <h2 class="text-3xl md:text-5xl font-display font-light tracking-widest uppercase text-white mb-2">
+                <span class="lang-en">${spot.name}</span>
+                <span class="lang-cn">${spot.nameCn}</span>
+              </h2>
+              <p class="text-insAccent text-xs tracking-[0.2em] uppercase">
+                <span class="lang-en">${cityData[activeCityKey].name}</span>
+                <span class="lang-cn">${cityData[activeCityKey].nameCn}</span>
+              </p>
+            </div>
+          </div>
+
+          <div class="glass-deep rounded-2xl p-6 md:p-10 mb-8">
+            <h3 class="text-lg font-medium text-white mb-4 tracking-wider">
+              <span class="lang-en">About This Attraction</span>
+              <span class="lang-cn">关于景点</span>
+            </h3>
+            <p class="text-insMuted leading-relaxed text-sm md:text-base mb-6 lang-en">${spot.detail.en}</p>
+            <p class="text-insMuted leading-relaxed text-sm md:text-base mb-6 lang-cn">${spot.detail.cn}</p>
+
+            <div class="flex flex-wrap gap-3">
+              <button onclick="openSpotImgModal('${spot.img}', '${spot.name}', '${spot.nameCn}')" 
+                class="glass px-4 py-2 rounded-full text-xs text-insAccent hover:bg-white/10 smooth-transition flex items-center gap-2">
+                <i class="fa fa-image"></i>
+                <span class="lang-en">View Image</span>
+                <span class="lang-cn">查看图片</span>
+              </button>
+              <button onclick="openCityModal('${activeCityKey}')" 
+                class="glass px-4 py-2 rounded-full text-xs text-insMuted hover:text-white hover:bg-white/10 smooth-transition flex items-center gap-2">
+                <i class="fa fa-map-marker"></i>
+                <span class="lang-en">Back to City</span>
+                <span class="lang-cn">返回城市</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- 相关景点推荐 -->
+          <div>
+            <h3 class="text-sm text-insAccent tracking-[0.2em] uppercase mb-4">
+              <span class="lang-en">More in ${cityData[activeCityKey].name}</span>
+              <span class="lang-cn">${cityData[activeCityKey].nameCn}更多景点</span>
+            </h3>
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+              ${cityData[activeCityKey].spots.filter(s => s.key !== spot.key).map(s => `
+                <div class="spot-card glass rounded-lg overflow-hidden cursor-pointer" onclick="openSpotDetail('${s.key}')">
+                  <div class="aspect-[16/10] overflow-hidden">
+                    <img src="${s.img}" class="w-full h-full object-cover smooth-transition" 
+                      onerror="this.src='https://images.unsplash.com/photo-1472214103451-9374bd1c798e?w=400&q=80'" />
+                  </div>
+                  <div class="p-3">
+                    <p class="text-xs text-white">
+                      <span class="lang-en">${s.name}</span>
+                      <span class="lang-cn">${s.nameCn}</span>
+                    </p>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+
+      // 立即应用当前语言
+      const allElements = document.querySelectorAll(".lang-en, .lang-cn");
+      allElements.forEach(el => {
+        if (el.classList.contains('lang-en')) {
+          el.style.display = currentLang === "en" ? "" : "none";
+        }
+        if (el.classList.contains('lang-cn')) {
+          el.style.display = currentLang === "cn" ? "" : "none";
+        }
+      });
+    }
+
+    function openSpotDetail(spotKey) {
+      activeSpotKey = spotKey;
+      const spot = cityData[activeCityKey].spots.find(s => s.key === spotKey);
+      if (!spot) return;
+
+      const modal = document.getElementById("spotDetailModal");
+      const bg = document.getElementById("spotDetailBg");
+      bg.style.backgroundImage = `url(${spot.img})`;
+
+      renderSpotDetail(spot);
+
+      modal.style.opacity = "1";
+      modal.style.pointerEvents = "auto";
+      document.body.style.overflow = "hidden";
+
+      // 隐藏城市弹窗但不关闭
+      const cityModal = document.getElementById("cityModal");
+      cityModal.style.opacity = "0";
+      cityModal.style.pointerEvents = "none";
+    }
+
+    document.getElementById("closeSpotDetail").addEventListener("click", () => {
+      const modal = document.getElementById("spotDetailModal");
+      modal.style.opacity = "0";
+      modal.style.pointerEvents = "none";
+      activeSpotKey = "";
+
+      // 恢复城市弹窗
+      if (activeCityKey) {
+        document.getElementById("cityModal").style.opacity = "1";
+        document.getElementById("cityModal").style.pointerEvents = "auto";
+      } else {
+        document.body.style.overflow = "";
+      }
+    });
+
+    // ==================== 景点图片预览弹窗 ====================
+    function openSpotImgModal(img, nameEn, nameCn) {
+      const modal = document.getElementById("spotImgModal");
+      const preview = document.getElementById("spotImgPreview");
+      const name = document.getElementById("spotImgName");
+
+      preview.src = img;
+      name.textContent = currentLang === "en" ? nameEn : nameCn;
+
+      modal.style.opacity = "1";
+      modal.style.pointerEvents = "auto";
+    }
+
+    document.getElementById("closeSpotImg").addEventListener("click", () => {
+      const modal = document.getElementById("spotImgModal");
+      modal.style.opacity = "0";
+      modal.style.pointerEvents = "none";
+      document.getElementById("spotImgPreview").src = "";
+    });
+
+    // 点击图片关闭
+    document.getElementById("spotImgPreview").addEventListener("click", () => {
+      document.getElementById("closeSpotImg").click();
+    });
+
+    // ==================== 初始化 ====================
+    function init() {
+      initCarousel();
+      bindLangSwitch();
+      updateHeroText();
+
+      // 初始化语言显示
+      const allElements = document.querySelectorAll(".lang-en, .lang-cn");
+      allElements.forEach(el => {
+        if (el.classList.contains('lang-en')) {
+          el.style.display = currentLang === "en" ? "" : "none";
+        }
+        if (el.classList.contains('lang-cn')) {
+          el.style.display = currentLang === "cn" ? "" : "none";
+        }
+      });
+    }
+
+    // 页面加载完成后初始化
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+  </script>
+</body>
+</html>
